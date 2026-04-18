@@ -1,0 +1,21 @@
+{
+  "orderID": 4001,
+  "clientID": 11,
+  "recieverAddress": "C/Principal 123, Madrid",
+  "recieverPerson": "Juan García",
+  "paymentDate": "2026-04-17",
+  "deliveryDate": "2026-04-20",
+  "phoneContact": "687654321",
+  "status": "PENDING",
+  "startDate": "2026-04-17",
+  "description": "Orden de libros",
+  "packageDimensionsCsv": "30x20x10",
+  "shopCart": [
+    {
+      "ref": "LIBRO-001",
+      "price": 29.99,
+      "discount": 2.5,
+      "amount": 2
+    }
+  ]
+}
