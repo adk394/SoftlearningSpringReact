@@ -72,58 +72,6 @@ export async function deleteClient(id) {
   return true;
 }
 
-// campaigns
-export async function getPromotionCampaigns() {
-  const res = await fetch(`${API}/campaigns`);
-  if (!res.ok) throw new Error("Error obteniendo campañas de promoción");
-  return res.json();
-}
-
-export async function createPromotionCampaign(promotionCampaign) {
-  const res = await fetch(`${API}/campaigns`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(promotionCampaign)
-  });
-  if (!res.ok) throw new Error("Error creando campaña de promoción");
-  return res.json();
-}
-
-export async function updatePromotionCampaign(id, promotionCampaign) {
-  const res = await fetch(`${API}/campaigns/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(promotionCampaign)
-  });
-  if (!res.ok) throw new Error("Error actualizando campaña de promoción");
-  return res.json();
-}
-
-export async function deletePromotionCampaign(id) {
-  const res = await fetch(`${API}/campaigns/${id}`, {
-    method: "DELETE"
-  });
-  if (!res.ok) throw new Error("Error eliminando campaña de promoción");
-  return true;
-}
-
-// vehicles
-export async function getVehicle() {
-  const res = await fetch(`${API}/vehicles`);
-  if (!res.ok) throw new Error("Error obteniendo campañas de Vehicles");
-  return res.json();
-}
-
-export async function createVehicle(vehicles) {
-  const res = await fetch(`${API}/vehicles`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(vehicle)
-  });
-  if (!res.ok) throw new Error("Error creando Vehicles");
-  return res.json();
-}
-
 // orders
 export async function getOrders() {
   const res = await fetch(`${API}/orders/public`);
