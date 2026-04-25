@@ -42,6 +42,9 @@ public class Book extends Product implements Storable, Marketable {
             throw new BuildException(error);
         }
 
+        // asignar disponibilidad recibida
+        book.setAvailable(isAvailable);
+
         return book;
     }
 

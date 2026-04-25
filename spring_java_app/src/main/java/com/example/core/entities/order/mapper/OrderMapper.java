@@ -18,6 +18,15 @@ public class OrderMapper {
             return null;
         }
 
+        String phoneContact = order.getPhoneContacts() == null ? null : String.join(",", order.getPhoneContacts());
+        if (phoneContact != null && phoneContact.trim().isEmpty()) {
+            phoneContact = null;
+        }
+
+        java.util.List<OrderDetailDTO> shopCart = order.getShopCartList().stream()
+            .map(OrderMapper::detailDtoFromDetail)
+            .collect(Collectors.toList());
+
         return new OrderDTO(
                 order.getOrderID(),
                 order.getClientID(),
@@ -25,14 +34,12 @@ public class OrderMapper {
                 order.getRecieverPerson(),
                 order.getPaymentDate(),
                 order.getDeliveryDate(),
-                order.getPhoneContacts() == null ? null : String.join(",", order.getPhoneContacts()),
+                phoneContact,
                 order.getStatus(),
                 order.getStartDateSafe(),
                 order.getDescription(),
                 order.getPackageDimensionsCsv(),
-                order.getShopCartList().stream()
-                        .map(OrderMapper::detailDtoFromDetail)
-                        .collect(Collectors.toList())
+                shopCart
         );
     }
 
@@ -43,10 +50,13 @@ public class OrderMapper {
         }
 
         String shopCartDetails = null;
-        if (dto.getShopCart() != null) {
-            shopCartDetails = dto.getShopCart().stream()
+        if (dto.getShopCart() != null && !dto.getShopCart().isEmpty()) {
+            String joined = dto.getShopCart().stream()
                     .map(d -> d.getRef() + "," + d.getPrice() + "," + d.getDiscount() + "," + d.getAmount())
                     .collect(Collectors.joining(";"));
+            if (joined != null && !joined.trim().isEmpty()) {
+                shopCartDetails = joined;
+            }
         }
 
         String phoneContacts = dto.getPhoneContact();

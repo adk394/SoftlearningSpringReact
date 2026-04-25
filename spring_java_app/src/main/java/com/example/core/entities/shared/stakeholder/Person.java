@@ -49,11 +49,13 @@ public abstract class Person {
     }
 
     public int setEmail(String email) {
-        if (Check.minStringChars(email, 12)) {
+        try {
+            Check.email(email);
             this.email = email;
             return 0;
+        } catch (Exception e) {
+            return -1;
         }
-        return -1;
     }
 
     public String getPhone() {

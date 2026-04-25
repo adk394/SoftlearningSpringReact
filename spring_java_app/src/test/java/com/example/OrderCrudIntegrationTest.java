@@ -32,18 +32,19 @@ public class OrderCrudIntegrationTest {
     @Test
     @Transactional
     public void testCrudOrderLifecycle() {
-        // cleanup
+        // TEST DE LA ACTIVIDAD DE JPA!!
+        // prueba rapida de crud
         orderRepository.deleteAll();
 
         // create
         OrderDTO order = new OrderDTO();
         order.setOrderID(1001);
         order.setClientID(42);
-        order.setDescription("pedido prueba lorem ipsum xzy");
+        order.setDescription("pedido prueba, lorem ipsun xzy");
         order.setDeliveryDate("2026-04-20T10:00:00");
-        order.setRecieverAddress("c/ agua 123, piso 4");
+        order.setRecieverAddress("c/ agua 123 piso 4");
         order.setRecieverPerson("maria garcia");
-        order.setPhoneContact("+34900111222");
+        order.setPhoneContact("+34 900111222");
         order.setPackageDimensionsCsv("30x20x10");
 
         OrderDetailDTO d1 = new OrderDetailDTO("ref1-abc", 10.0, 0.0, 2);

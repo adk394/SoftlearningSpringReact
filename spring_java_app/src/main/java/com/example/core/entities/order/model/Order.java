@@ -109,7 +109,8 @@ public class Order extends Operation {
 
     public int setPhoneContacts(String phones) {
         if (phones == null || phones.trim().isEmpty()) {
-            return -1;
+            // si no hay telefons, se considera correcto!!!
+            return 0;
         }
         try {
             String[] phoneArray = phones.split(",");
