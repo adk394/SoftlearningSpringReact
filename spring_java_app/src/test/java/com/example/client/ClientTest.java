@@ -30,8 +30,8 @@ class ClientTest {
     @DisplayName("client")
     class GetInstanceValid {
         @Test
-        @DisplayName("atributos principales")
-        void atributosPrincipales() {
+        @DisplayName("main attributes")
+        void mainAttributes() {
             assertAll(
                     () -> assertEquals(VALID_IDCLIENT, client.getIdClient()),
                     () -> assertEquals(VALID_EMAIL, client.getEmail()),
@@ -39,8 +39,8 @@ class ClientTest {
         }
 
         @Test
-        @DisplayName("toString contiene datos")
-        void toStringContiene() {
+        @DisplayName("toString contains data")
+        void toStringContains() {
             String s = client.toString();
             assertAll(
                     () -> assertTrue(s.contains(String.valueOf(VALID_IDCLIENT))),
@@ -59,48 +59,48 @@ class ClientTest {
     @DisplayName("getinstance inválido")
     class GetInstanceInvalid {
         @Test
-        @DisplayName("email inválido")
-        void emailInvalido() {
+        @DisplayName("email invalido")
+        void emailInvalid() {
             assertThrows(BuildException.class,
                     () -> Client.getInstance(VALID_IDPERSON, "bad-email", VALID_PHONE,
                             VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
         }
 
         @Test
-        @DisplayName("id persona corto")
-        void idPersonaCorto() {
+        @DisplayName("id muy corto")
+        void idPersonTooShortInstance() {
             assertThrows(BuildException.class,
                     () -> Client.getInstance("1234567", VALID_EMAIL, VALID_PHONE,
                             VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
         }
 
         @Test
-        @DisplayName("teléfono corto")
-        void telefonoCorto() {
+        @DisplayName("phone muy corto")
+        void phoneTooShortInstance() {
             assertThrows(BuildException.class,
                     () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, "60012345",
                             VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
         }
 
         @Test
-        @DisplayName("dirección corta")
-        void direccionCorta() {
+        @DisplayName("address muy corto")
+        void addressTooShortInstance() {
             assertThrows(BuildException.class,
                     () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
                             "Calle 9", VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
         }
 
         @Test
-        @DisplayName("nombre corto")
-        void nombreCorto() {
+        @DisplayName("name muy corto")
+        void nameTooShortInstance() {
             assertThrows(BuildException.class,
                     () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
                             VALID_ADDRESS, "Al", VALID_IDCLIENT, VALID_REGDATE));
         }
 
         @Test
-        @DisplayName("varios errores")
-        void variosErrores() {
+        @DisplayName("multiples errores")
+        void multipleErrors() {
             BuildException ex = assertThrows(BuildException.class,
                     () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
                             VALID_ADDRESS, VALID_NAME, 999, "bad-date"));
@@ -127,19 +127,19 @@ class ClientTest {
         }
 
         @Test
-        @DisplayName("phone too short")
+        @DisplayName("phone muy corto")
         void setPhoneTooShort() {
             assertEquals(-1, client.setPhone("12345"));
         }
 
         @Test
-        @DisplayName("address whitespace")
+        @DisplayName("address con espacios en blanco")
         void setAddressWhitespace() {
             assertEquals(-1, client.setAdress("   "));
         }
 
         @Test
-        @DisplayName("name too short")
+        @DisplayName("name muy corto")
         void setNameTooShort() {
             assertEquals(-1, client.setNamePerson("Al"));
         }

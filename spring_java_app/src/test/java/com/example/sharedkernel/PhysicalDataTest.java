@@ -21,7 +21,7 @@ class PhysicalDataTest {
     class GetInstanceValid {
         @Test
         @DisplayName("valores válidos")
-        void crearInstancia() throws BuildException {
+        void createInstance() throws BuildException {
             PhysicalData pd = PhysicalData.getInstance(VALID_WEIGHT, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH);
             assertAll(
                     () -> assertEquals(VALID_WEIGHT, pd.getWeight()),
@@ -35,14 +35,14 @@ class PhysicalDataTest {
     class GetInstanceInvalid {
         @Test
         @DisplayName("peso inválido")
-        void pesoInvalido() {
+        void weightInvalid() {
             assertThrows(BuildException.class,
                     () -> PhysicalData.getInstance(0, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH));
         }
 
         @Test
         @DisplayName("dimensiones inválidas")
-        void dimsInvalidas() {
+        void dimsInvalid() {
             assertThrows(BuildException.class,
                     () -> PhysicalData.getInstance(VALID_WEIGHT, 0, VALID_WIDTH, VALID_DEPTH));
             assertThrows(BuildException.class,
@@ -57,7 +57,7 @@ class PhysicalDataTest {
     class SettersAndCalculations {
         @Test
         @DisplayName("setters")
-        void setters() throws BuildException {
+        void settersWork() throws BuildException {
             PhysicalData pd = PhysicalData.getInstance(VALID_WEIGHT, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH);
             assertEquals(-1, pd.setWeight(0));
             assertEquals(0, pd.setWeight(1.2));
@@ -68,7 +68,7 @@ class PhysicalDataTest {
 
         @Test
         @DisplayName("volumen y area")
-        void volumenArea() throws BuildException {
+        void volumeArea() throws BuildException {
             PhysicalData pd = PhysicalData.getInstance(VALID_WEIGHT, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH);
             double expectedVolume = VALID_HEIGHT * VALID_WIDTH * VALID_DEPTH;
             double expectedArea = VALID_WIDTH * VALID_HEIGHT;
@@ -78,7 +78,7 @@ class PhysicalDataTest {
 
         @Test
         @DisplayName("formato tamaño")
-        void formatoTamano() throws BuildException {
+        void sizeFormat() throws BuildException {
             PhysicalData pd = PhysicalData.getInstance(VALID_WEIGHT, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH);
             String s = pd.getSize();
             assertTrue(s.contains("height:"));

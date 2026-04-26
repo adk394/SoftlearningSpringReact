@@ -11,48 +11,48 @@ import static org.junit.jupiter.api.Assertions.*;
 class CheckTest {
 
     @Test
-    void requireNonNull_noNull() {
+    void requireNonNullOk() {
         String value = "test";
         assertDoesNotThrow(() -> Check.requireNonNull(value, "value"));
     }
 
     @Test
-    void requireNonNull_nullLanza() {
+    void requireNonNullThrows() {
         assertThrows(IllegalArgumentException.class,
                 () -> Check.requireNonNull(null, "value"));
     }
 
     @Test
-    void nonEmpty_ok() {
+    void nonEmptyOk() {
         String value = "hola";
         assertDoesNotThrow(() -> Check.requireNonEmpty(value, "value"));
     }
 
     @Test
-    void nonEmpty_vacio() {
+    void nonEmptyThrows() {
         assertThrows(IllegalArgumentException.class,
                 () -> Check.requireNonEmpty("", "value"));
     }
 
     @Test
-    void numeroValido() {
+    void validNumber() {
         assertTrue(Check.isValidNumber(10, 1));
     }
 
     @Test
-    void numeroNoValido() {
+    void invalidNumber() {
         assertFalse(Check.isValidNumber(0, 1));
         assertFalse(Check.isValidNumber(-5, 1));
     }
 
     @Test
-    void emailValidoInvalido() {
+    void emailValidAndInvalid() {
         assertDoesNotThrow(() -> Check.email("a@a.com"));
         assertThrows(IllegalArgumentException.class, () -> Check.email("bad-email"));
     }
 
     @Test
-    void isbnValido() {
+    void isbnValid() {
         assertTrue(Check.ISBN("0306406152"));
         assertTrue(Check.ISBN("9783161484100"));
         assertFalse(Check.ISBN("1234567890"));
@@ -72,7 +72,7 @@ class CheckTest {
     }
 
     @Test
-    void fechaIdaVuelta() throws GeneralDateTimeException {
+    void dateRoundTrip() throws GeneralDateTimeException {
         java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
         java.time.LocalDateTime dt = Check.convertStringToDateTime("01-01-2024, 00:00:00", fmt);
         String back = Check.convertDateTimeToString(dt, fmt);
@@ -80,7 +80,7 @@ class CheckTest {
     }
 
     @Test
-    void fechaInvalid() {
+    void dateInvalid() {
         java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy, HH:mm:ss");
         assertThrows(GeneralDateTimeException.class, () -> Check.convertStringToDateTime("bad", fmt));
         assertThrows(GeneralDateTimeException.class, () -> Check.convertDateTimeToString(null, fmt));
