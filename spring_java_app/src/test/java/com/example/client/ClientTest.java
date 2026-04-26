@@ -2,40 +2,182 @@ package com.example.client;
 
 import com.example.core.entities.client.model.Client;
 import com.example.shared.exceptions.BuildException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("client - creacion y validacion")
+@DisplayName("client")
 class ClientTest {
 
-    @Test
-    void createValidClient() throws BuildException {
-        Client client = Client.getInstance(
-                "12345678A",
-                "test@email.com",
-                "600123456",
-                "Calle Falsa 123",
-                "juan perez",
-                1001,
-                "01-01-2024, 00:00:00");
+    // datos validos reutilizables
+    static final String VALID_IDPERSON = "12345678A";
+    static final String VALID_EMAIL = "test@email.com";
+    static final String VALID_PHONE = "600123456";
+    static final String VALID_ADDRESS = "Calle Aigua 123";
+    static final String VALID_NAME = "juan perez";
+    static final int VALID_IDCLIENT = 1001;
+    static final String VALID_REGDATE = "01-01-2024, 00:00:00";
 
-        assertAll(
-                () -> assertEquals(1001, client.getIdClient()),
-                () -> assertEquals("test@email.com", client.getEmail()),
-                () -> assertEquals("juan perez", client.getNamePerson()));
+    Client client;
+
+    @BeforeEach
+    void setUp() throws BuildException {
+        client = Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
+                VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE);
     }
 
-    @Test
-    void throwsWhenInvalidEmail() {
-        assertThrows(BuildException.class, () -> Client.getInstance(
-                "12345678A",
-                "email-invalido",
-                "600123456",
-                "Calle Falsa 123",
-                "juan perez",
-                1001,
-                "01-01-2024, 00:00:00"));
+    @Nested
+    @DisplayName("client")
+    class GetInstanceValid {
+        @Test
+        @DisplayName("atributos principales")
+        void atributosPrincipales() {
+            assertAll(
+                    () -> assertEquals(VALID_IDCLIENT, client.getIdClient()),
+                    () -> assertEquals(VALID_EMAIL, client.getEmail()),
+                    () -> assertEquals(VALID_NAME, client.getNamePerson()));
+        }
+
+        @Test
+        @DisplayName("toString contiene datos")
+        void toStringContiene() {
+            String s = client.toString();
+            assertAll(
+                    () -> assertTrue(s.contains(String.valueOf(VALID_IDCLIENT))),
+                    () -> assertTrue(s.contains(VALID_EMAIL)),
+                    () -> assertTrue(s.contains(VALID_NAME)));
+        }
+
+        @Test
+        @DisplayName("datos de contacto")
+        void contactDataCorrect() {
+            assertEquals(VALID_IDPERSON + "|" + VALID_EMAIL + "|" + VALID_PHONE, client.getContactData());
+        }
+    }
+
+    @Nested
+    @DisplayName("getinstance inválido")
+    class GetInstanceInvalid {
+        @Test
+        @DisplayName("email inválido")
+        void emailInvalido() {
+            assertThrows(BuildException.class,
+                    () -> Client.getInstance(VALID_IDPERSON, "bad-email", VALID_PHONE,
+                            VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
+        }
+
+        @Test
+        @DisplayName("id persona corto")
+        void idPersonaCorto() {
+            assertThrows(BuildException.class,
+                    () -> Client.getInstance("1234567", VALID_EMAIL, VALID_PHONE,
+                            VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
+        }
+
+        @Test
+        @DisplayName("teléfono corto")
+        void telefonoCorto() {
+            assertThrows(BuildException.class,
+                    () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, "60012345",
+                            VALID_ADDRESS, VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
+        }
+
+        @Test
+        @DisplayName("dirección corta")
+        void direccionCorta() {
+            assertThrows(BuildException.class,
+                    () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
+                            "Calle 9", VALID_NAME, VALID_IDCLIENT, VALID_REGDATE));
+        }
+
+        @Test
+        @DisplayName("nombre corto")
+        void nombreCorto() {
+            assertThrows(BuildException.class,
+                    () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
+                            VALID_ADDRESS, "Al", VALID_IDCLIENT, VALID_REGDATE));
+        }
+
+        @Test
+        @DisplayName("varios errores")
+        void variosErrores() {
+            BuildException ex = assertThrows(BuildException.class,
+                    () -> Client.getInstance(VALID_IDPERSON, VALID_EMAIL, VALID_PHONE,
+                            VALID_ADDRESS, VALID_NAME, 999, "bad-date"));
+
+            String msg = ex.getMessage();
+            assertTrue(msg.contains("id cliente incorrecto"));
+            assertTrue(msg.contains("fecha de registro incorrecta"));
+        }
+    }
+
+    @Nested
+    @DisplayName("setters específicos de PERSON")
+    class PersonSetters {
+        @Test
+        @DisplayName("idPerson null")
+        void setIdPersonNull() {
+            assertEquals(-1, client.setIdPerson(null));
+        }
+
+        @Test
+        @DisplayName("email null")
+        void setEmailNull() {
+            assertEquals(-1, client.setEmail(null));
+        }
+
+        @Test
+        @DisplayName("phone too short")
+        void setPhoneTooShort() {
+            assertEquals(-1, client.setPhone("12345"));
+        }
+
+        @Test
+        @DisplayName("address whitespace")
+        void setAddressWhitespace() {
+            assertEquals(-1, client.setAdress("   "));
+        }
+
+        @Test
+        @DisplayName("name too short")
+        void setNameTooShort() {
+            assertEquals(-1, client.setNamePerson("Al"));
+        }
+
+        @Test
+        @DisplayName("registration date format")
+        void registrationDateFormat() {
+            assertTrue(client.getRegistrationDate().contains("01-01-2024"));
+        }
+    }
+
+    @Nested
+    @DisplayName("setters específicos de CLIENT")
+    class ClientSetters {
+        @Test
+        @DisplayName("setIdClient acepta id >= 1000")
+        void setIdClientValid() {
+            assertEquals(0, client.setIdClient(1500));
+            assertEquals(1500, client.getIdClient());
+        }
+
+        @Test
+        @DisplayName("setIdClient rechaza id < 1000")
+        void setIdClientInvalid() {
+            assertEquals(-1, client.setIdClient(1));
+        }
+
+        @Test
+        @DisplayName("setRegistrationDate acepta fecha formateada")
+        void setRegistrationDateOk() {
+            assertEquals(0, client.setRegistrationDate("02-02-2024, 12:00:00"));
+            assertTrue(client.getRegistrationDate().contains("02-02-2024"));
+        }
+
+        @Test
+        @DisplayName("setRegistrationDate rechaza formato invalido")
+        void setRegistrationDateBad() {
+            assertEquals(-1, client.setRegistrationDate("invalid-date"));
+        }
     }
 }

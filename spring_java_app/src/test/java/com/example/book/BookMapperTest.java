@@ -6,21 +6,30 @@ import com.example.core.entities.book.model.Book;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("bookmapper - conversion entre book y dto")
+@DisplayName("bookmapper")
 class BookMapperTest extends BookTest {
 
-    // hereda setup() de BookTest q inicializa 'book'
+    // hereda de booktest
     private BookDTO dto;
 
     @BeforeEach
     void setUpDto() {
-        dto = new BookDTO(VALID_TITLE, Integer.parseInt(VALID_ID), VALID_PRICE,
-                VALID_AUTHOR, VALID_ISBN, String.valueOf(VALID_YEAR),
-                VALID_EDITORIAL, VALID_WEIGHT, VALID_HEIGHT, VALID_WIDTH, VALID_DEPTH);
+        dto = new BookDTO(
+                VALID_TITLE,
+                Integer.parseInt(VALID_ID),
+                VALID_PRICE,
+                VALID_AUTHOR,
+                VALID_ISBN,
+                String.valueOf(VALID_YEAR),
+                VALID_EDITORIAL,
+                VALID_WEIGHT,
+                VALID_HEIGHT,
+                VALID_WIDTH,
+                VALID_DEPTH);
     }
 
     @Nested
-    @DisplayName("booktodto - book -> dto")
+    @DisplayName("book y dto")
     class BookToDTO {
         @Test
         @DisplayName("convierte book a dto con todos los campos mapeados")
@@ -37,7 +46,6 @@ class BookMapperTest extends BookTest {
     }
 
     @Nested
-    @DisplayName("dtotobook - dto -> book")
     class DtoToBook {
         @Test
         @DisplayName("convierte dto valido a book con datos correctos")
@@ -59,11 +67,10 @@ class BookMapperTest extends BookTest {
     }
 
     @Nested
-    @DisplayName("round-trip book -> dto -> book")
     class RoundTrip {
         @Test
-        @DisplayName("el round-trip conserva titulo, isbn y precio")
-        void roundTripPreservesData() throws Exception {
+        @DisplayName("conserva datos")
+        void roundTrip() throws Exception {
             BookDTO converted = BookMapper.BookToDTO(book);
             Book restored = BookMapper.DTOtoBook(converted);
             assertAll(

@@ -8,17 +8,17 @@ import com.example.shared.exceptions.GeneralDateTimeException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("ordermapper - conversion entre order y orderdto")
+@DisplayName("ordermapper")
 class OrderMapperTest extends OrderTest {
 
-    // hereda setup() de OrderTest -> 'order' ya inicializado
+    // hereda setup() de OrderTest
 
     @Nested
-    @DisplayName("dtofromorder - order -> orderdto")
+    @DisplayName("order a dto")
     class DtoFromOrder {
         @Test
         @DisplayName("convierte order a dto no null con los campos principales")
-        void convertsToDtoCorrectly() {
+        void toDto() {
             OrderDTO dto = OrderMapper.dtoFromOrder(order);
             assertAll(
                     () -> assertNotNull(dto),
@@ -36,8 +36,9 @@ class OrderMapperTest extends OrderTest {
     }
 
     @Nested
-    @DisplayName("orderfromdto - dto -> order")
+    @DisplayName("dto a order")
     class OrderFromDto {
+        // si da error, comentar el mapeo de orderpublicdto!!!
         @Test
         @DisplayName("convierte dto valido a order con datos correctos")
         void convertsDtoToOrder() throws BuildException, GeneralDateTimeException {
@@ -55,8 +56,9 @@ class OrderMapperTest extends OrderTest {
         }
     }
 
+    // AÑADIR TEST D ORDER DETAIL!!!!!!!!!!!!!!!
     @Nested
-    @DisplayName("detaildtofromdetail - orderdetail -> orderdetaildto")
+    @DisplayName("detail a dto")
     class DetailDtoFromDetail {
         @Test
         @DisplayName("convierte orderdetail correctamente")

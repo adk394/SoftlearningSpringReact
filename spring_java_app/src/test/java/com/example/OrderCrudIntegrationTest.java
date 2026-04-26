@@ -15,6 +15,8 @@ import com.example.core.entities.order.dtos.OrderDetailDTO;
 import com.example.infraestructure.persistence.jpa.JpaOrderRepository;
 
 @SpringBootTest
+
+// TEST DE INTEGRACION CON JPA PROBAND CRUD BASICO!!!
 @TestPropertySource(properties = {
         "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",

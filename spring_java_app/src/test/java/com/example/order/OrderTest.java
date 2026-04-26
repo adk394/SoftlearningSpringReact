@@ -8,10 +8,10 @@ import com.example.shared.exceptions.GeneralDateTimeException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("order - pedido (hereda operation)")
+@DisplayName("order")
 class OrderTest {
 
-    // datos validos compartidos con subclases
+    // datos validos
     static final int VALID_ORDER_ID = 1;
     static final int VALID_CLIENT_ID = 1001;
     static final String VALID_START = "01/01/2024-10:00:00";
@@ -29,10 +29,9 @@ class OrderTest {
                 VALID_START, VALID_DESC);
     }
 
-    // ── getInstance simple ────────────────────────────────────────────────
 
     @Nested
-    @DisplayName("getinstance - constructor simple")
+    @DisplayName("constructor simple")
     class GetInstanceSimple {
         @Test
         @DisplayName("crea order con datos basicos validos (herencia operation)")
@@ -59,10 +58,8 @@ class OrderTest {
         }
     }
 
-    // ── Setters de Order ──────────────────────────────────────────────────
-
     @Nested
-    @DisplayName("setters de order")
+    @DisplayName("setters de ORDER")
     class OrderSetters {
         @Test
         @DisplayName("setrecieveraddress acepta direccion no vacia")
@@ -80,24 +77,22 @@ class OrderTest {
 
         @Test
         @DisplayName("setpaymentdate cambia el status a CONFIRMED")
-        void paymentDateChangesStatus() {
+        void paymentConfirms() {
             order.setPaymentDate(VALID_PAYMENT);
             assertEquals("CONFIRMED", order.getStatus());
         }
 
         @Test
         @DisplayName("setdeliverydate cambia el status a DELIVERED")
-        void deliveryDateChangesStatus() {
+        void deliveryConfirms() {
             order.setPaymentDate(VALID_PAYMENT);
             order.setDeliveryDate("03/01/2024-10:00:00");
             assertEquals("DELIVERED", order.getStatus());
         }
     }
 
-    // ── PhysicalData (orderPackage) ───────────────────────────────────────
-
     @Nested
-    @DisplayName("setdimensions - physicaldata del paquete")
+    @DisplayName("dimensiones paquete")
     class Dimensions {
         @Test
         @DisplayName("setdimensions asigna correctamente con csv valido")
@@ -108,21 +103,19 @@ class OrderTest {
 
         @Test
         @DisplayName("setdimensions rechaza csv con partes incorrectas")
-        void setDimensionsInvalidFormat() {
+        void setDimensionsBadFormat() {
             assertEquals(-1, order.setDimensions("1.5,20.0"));
         }
 
         @Test
         @DisplayName("setdimensions rechaza valores <= 0")
-        void setDimensionsZeroValues() {
+        void setDimensionsZero() {
             assertEquals(-1, order.setDimensions("0,0,0,0"));
         }
     }
 
-    // ── ShopCart (array de OrderDetail) ───────────────────────────────────
-
     @Nested
-    @DisplayName("setshopcartdetails - array de orderdetail")
+    @DisplayName("shopcart details")
     class ShopCart {
         @Test
         @DisplayName("anade orderdetails correctamente con formato csv valido")

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("jacksonserializer (json) - serializacion y deserializacion")
+@DisplayName("serializar JSON")
 class JacksonSerializerTest {
 
     protected ClientDTO clientDTO;
@@ -28,7 +28,7 @@ class JacksonSerializerTest {
     }
 
     @Nested
-    @DisplayName("serialize - objeto a json")
+    @DisplayName("serializar")
     class Serialize {
 
         private JacksonSerializer<ClientDTO> serializer;
@@ -59,7 +59,7 @@ class JacksonSerializerTest {
     }
 
     @Nested
-    @DisplayName("deserialize - json a objeto")
+    @DisplayName("deserializar")
     class Deserialize {
 
         private JacksonSerializer<ClientDTO> serializer;

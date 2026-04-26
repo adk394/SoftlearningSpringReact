@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("xmljacksonserializer (xml) - serializacion y deserializacion")
+@DisplayName("serializar XML")
 class JacksonXMLSerializerTest extends JacksonSerializerTest {
 
     @Nested
-    @DisplayName("serialize - objeto a xml")
+    @DisplayName("serializar")
     class SerializeXml {
 
         private XmlJacksonSerializer<ClientDTO> xmlSerializer;
@@ -44,7 +44,7 @@ class JacksonXMLSerializerTest extends JacksonSerializerTest {
     }
 
     @Nested
-    @DisplayName("deserialize - xml a objeto")
+    @DisplayName("deserializar")
     class DeserializeXml {
 
         private XmlJacksonSerializer<ClientDTO> xmlSerializer;

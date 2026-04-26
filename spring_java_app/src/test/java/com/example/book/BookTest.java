@@ -5,10 +5,10 @@ import com.example.shared.exceptions.BuildException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("book - entidad de dominio (hereda product, implementa storable/marketable)")
+@DisplayName("book")
 class BookTest {
 
-    // datos valdos (accesibles por subclases)
+    // datos validos reutilizables
     static final String VALID_ID = "1001";
     static final String VALID_NAME = "Clean Code";
     static final String VALID_DESCRIPTION = "Un libro sobre buenas prácticas";
@@ -35,11 +35,11 @@ class BookTest {
     }
 
     @Nested
-    @DisplayName("getinstance - valido")
+    @DisplayName("getinstance valido")
     class GetInstanceValid {
         @Test
         @DisplayName("asigna correctamente todos los atributos de product")
-        void productAttributesAreSet() {
+        void productAttributesSet() {
             assertAll(
                     () -> assertEquals(VALID_ID, book.getIdProduct()),
                     () -> assertEquals(VALID_NAME, book.getName()),
@@ -67,7 +67,7 @@ class BookTest {
     }
 
     @Nested
-    @DisplayName("getinstance - datos invalidos -> BuildException")
+    @DisplayName("getinstance inválido")
     class GetInstanceInvalid {
         @Test
         @DisplayName("isbn invalido lanza BuildException")
@@ -98,8 +98,8 @@ class BookTest {
     }
 
     @Nested
-    @DisplayName("storable - getvolume / getarea")
-    class StorableMethods {
+    @DisplayName("validaciones de storable")
+    class StorableMetods {
         @Test
         @DisplayName("getvolume delega en physicaldata")
         void volumeIsCorrect() {
@@ -115,7 +115,7 @@ class BookTest {
     }
 
     @Nested
-    @DisplayName("marketable - isavailable")
+    @DisplayName("validaciones de marketable")
     class MarketableMethods {
         @Test
         @DisplayName("isavailable devuelve true cuando se crea con isavailable=true")
@@ -125,14 +125,14 @@ class BookTest {
 
         @Test
         @DisplayName("setavailable cambia la disponibilidad")
-        void setAvailableChangesValue() {
+        void changeAvailability() {
             book.setAvailable(false);
             assertFalse(book.isAvailable());
         }
     }
 
     @Nested
-    @DisplayName("setters de product (heredados)")
+    @DisplayName("setters de PRODUCT (heredados)")
     class ProductSetters {
         @Test
         @DisplayName("setprice acepta precio >= 0")
@@ -152,5 +152,69 @@ class BookTest {
         void setStockValid() {
             assertEquals(0, book.setStock(0));
         }
+    }
+
+    @Nested
+    @DisplayName("setters de BOOK")
+    class BookSetters {
+        @Test
+        @DisplayName("isbn ok")
+        void setIsbnValid() {
+            assertEquals(0, book.setIsbn(VALID_ISBN));
+            assertEquals(VALID_ISBN, book.getIsbn());
+        }
+
+        @Test
+        @DisplayName("isbn bad")
+        void setIsbnInvalid() {
+            assertEquals(-1, book.setIsbn("BAD-ISBN"));
+        }
+
+        @Test
+        @DisplayName("title ok")
+        void setTitleValid() {
+            assertEquals(0, book.setTitle("jarry potter"));
+            assertEquals("jarry potter", book.getTitle());
+        }
+
+        @Test
+        @DisplayName("title bad")
+        void setTitleInvalid() {
+            assertEquals(-1, book.setTitle(""));
+        }
+
+        @Test
+        @DisplayName("author ok")
+        void setAuthorValid() {
+            assertEquals(0, book.setAuthor("Author"));
+            assertEquals("Author", book.getAuthor());
+        }
+
+        @Test
+        @DisplayName("author bad")
+        void setAuthorInvalid() {
+            assertEquals(-1, book.setAuthor(""));
+        }
+
+        @Test
+        @DisplayName("editorial ok")
+        void setEditorialValid() {
+            assertEquals(0, book.setEditorial("Ed"));
+            assertEquals("Ed", book.getEditorial());
+        }
+
+        @Test
+        @DisplayName("editorial bad")
+        void setEditorialInvalid() {
+            assertEquals(-1, book.setEditorial("A"));
+        }
+
+        @Test
+        @DisplayName("year ok")
+        void setYearValid() {
+            assertEquals(0, book.setYearPublished(1999));
+            assertEquals(1999, book.getYearPublished());
+        }
+
     }
 }

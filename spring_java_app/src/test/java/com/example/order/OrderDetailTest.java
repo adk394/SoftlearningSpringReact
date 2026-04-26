@@ -5,9 +5,10 @@ import com.example.shared.exceptions.BuildException;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("orderdetail - linea de pedido")
+@DisplayName("orderdetail")
 class OrderDetailTest {
 
+    // datos validos
     static final String VALID_REF = "BOOK-001";
     static final double VALID_PRICE = 29.99;
     static final double VALID_DISCOUNT = 5.0;
@@ -35,10 +36,10 @@ class OrderDetailTest {
     }
 
     @Nested
-    @DisplayName("getdetailcost - calculo de coste")
+    @DisplayName("coste detalle")
     class DetailCost {
         @Test
-        @DisplayName("el coste es (price - discount) * amount")
+        @DisplayName("calcula coste")
         void costIsCorrect() {
             double expected = (VALID_PRICE - VALID_DISCOUNT) * VALID_AMOUNT;
             assertEquals(expected, detail.getDetailCost(), 0.001);
@@ -53,11 +54,11 @@ class OrderDetailTest {
     }
 
     @Nested
-    @DisplayName("setamount - validacion")
+    @DisplayName("setamount")
     class SetAmount {
         @Test
         @DisplayName("setamount acepta 0 y valores positivos")
-        void acceptsZeroAndPositive() throws BuildException {
+        void acceptsZeroPositive() throws BuildException {
             detail.setAmount(0);
             assertEquals(0, detail.getAmount());
         }
@@ -70,11 +71,11 @@ class OrderDetailTest {
     }
 
     @Nested
-    @DisplayName("getdetail - formato csv")
+    @DisplayName("formato csv")
     class GetDetail {
         @Test
         @DisplayName("getdetail devuelve los 4 campos separados por coma")
-        void detailContainsAllFields() {
+        void detailHasAllFields() {
             String d = detail.getDetail();
             assertAll(
                     () -> assertTrue(d.contains(VALID_REF)),

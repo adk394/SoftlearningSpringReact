@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("clientmapper - convesion dto <-> entidad")
+@DisplayName("clientmapper")
 class ClientMapperTest {
 
         @Test
