@@ -151,6 +151,52 @@ class BookTest {
         @DisplayName("setstock acepta stock >= 0")
         void setStockValid() {
             assertEquals(0, book.setStock(0));
+            assertEquals(0, book.getStock());
+        }
+
+        @Test
+        @DisplayName("setstock rechaza stock negativo")
+        void setStockInvalid() {
+            assertEquals(-1, book.setStock(-5));
+        }
+
+        @Test
+        @DisplayName("setname acepta nombre valido")
+        void setNameValid() {
+            assertEquals(0, book.setName("Effective Java"));
+            assertEquals("Effective Java", book.getName());
+        }
+
+        @Test
+        @DisplayName("setname rechaza nombre muy corto")
+        void setNameInvalid() {
+            assertEquals(-1, book.setName("AB"));
+        }
+
+        @Test
+        @DisplayName("setdescription acepta descripcion valida")
+        void setDescriptionValid() {
+            assertEquals(0, book.setDescription("Libro de prueba con descripcion valida"));
+            assertEquals("Libro de prueba con descripcion valida", book.getDescription());
+        }
+
+        @Test
+        @DisplayName("setdescription rechaza descripcion muy corta")
+        void setDescriptionInvalid() {
+            assertEquals(-1, book.setDescription("Corta"));
+        }
+
+        @Test
+        @DisplayName("setidproduct acepta idProduct valido")
+        void setIdProductValid() {
+            assertEquals(0, book.setIdProduct("B123"));
+            assertEquals("B123", book.getIdProduct());
+        }
+
+        @Test
+        @DisplayName("setidproduct rechaza idProduct muy corto")
+        void setIdProductInvalid() {
+            assertEquals(-1, book.setIdProduct("B1"));
         }
     }
 
@@ -216,5 +262,22 @@ class BookTest {
             assertEquals(1999, book.getYearPublished());
         }
 
+        @Test
+        @DisplayName("year rechaza valor negativo")
+        void setYearInvalid() {
+            assertEquals(-1, book.setYearPublished(-2020));
+        }
+
+        @Test
+        @DisplayName("title rechaza valor en blanco")
+        void setTitleWhitespaceInvalid() {
+            assertEquals(-1, book.setTitle("   "));
+        }
+
+        @Test
+        @DisplayName("editorial rechaza valor en blanco")
+        void setEditorialWhitespaceInvalid() {
+            assertEquals(-1, book.setEditorial("   "));
+        }
     }
 }

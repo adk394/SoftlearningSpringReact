@@ -121,9 +121,29 @@ class ClientTest {
         }
 
         @Test
+        @DisplayName("idPerson valido")
+        void setIdPersonValid() {
+            assertEquals(0, client.setIdPerson("87654321B"));
+            assertEquals("87654321B", client.getIdPerson());
+        }
+
+        @Test
         @DisplayName("email null")
         void setEmailNull() {
             assertEquals(-1, client.setEmail(null));
+        }
+
+        @Test
+        @DisplayName("email valido")
+        void setEmailValid() {
+            assertEquals(0, client.setEmail("nuevo@test.com"));
+            assertEquals("nuevo@test.com", client.getEmail());
+        }
+
+        @Test
+        @DisplayName("email con formato inválido")
+        void setEmailInvalidFormat() {
+            assertEquals(-1, client.setEmail("bad-email"));
         }
 
         @Test
@@ -133,15 +153,42 @@ class ClientTest {
         }
 
         @Test
+        @DisplayName("phone valido")
+        void setPhoneValid() {
+            assertEquals(0, client.setPhone("600123457"));
+            assertEquals("600123457", client.getPhone());
+        }
+
+        @Test
+        @DisplayName("phone con espacios en blanco rechaza")
+        void setPhoneWhitespaceInvalid() {
+            assertEquals(-1, client.setPhone("   "));
+        }
+
+        @Test
         @DisplayName("address con espacios en blanco")
         void setAddressWhitespace() {
             assertEquals(-1, client.setAdress("   "));
         }
 
         @Test
+        @DisplayName("address valida")
+        void setAddressValid() {
+            assertEquals(0, client.setAdress("Calle Nueva 45"));
+            assertEquals("Calle Nueva 45", client.getAdress());
+        }
+
+        @Test
         @DisplayName("name muy corto")
         void setNameTooShort() {
             assertEquals(-1, client.setNamePerson("Al"));
+        }
+
+        @Test
+        @DisplayName("name valido")
+        void setNameValid() {
+            assertEquals(0, client.setNamePerson("Maria Lopez"));
+            assertEquals("Maria Lopez", client.getNamePerson());
         }
 
         @Test
@@ -168,6 +215,13 @@ class ClientTest {
         }
 
         @Test
+        @DisplayName("setIdClient acepta 1000 como limite")
+        void setIdClientBoundaryValid() {
+            assertEquals(0, client.setIdClient(1000));
+            assertEquals(1000, client.getIdClient());
+        }
+
+        @Test
         @DisplayName("setRegistrationDate acepta fecha formateada")
         void setRegistrationDateOk() {
             assertEquals(0, client.setRegistrationDate("02-02-2024, 12:00:00"));
@@ -178,6 +232,12 @@ class ClientTest {
         @DisplayName("setRegistrationDate rechaza formato invalido")
         void setRegistrationDateBad() {
             assertEquals(-1, client.setRegistrationDate("invalid-date"));
+        }
+
+        @Test
+        @DisplayName("setRegistrationDate rechaza null")
+        void setRegistrationDateNull() {
+            assertEquals(-1, client.setRegistrationDate(null));
         }
     }
 }

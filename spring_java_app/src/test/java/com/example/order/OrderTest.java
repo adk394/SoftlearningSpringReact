@@ -76,10 +76,53 @@ class OrderTest {
         }
 
         @Test
+        @DisplayName("setrecieverperson acepta nombre no vacio")
+        void setReceiverPersonValid() {
+            assertEquals(0, order.setRecieverPerson(VALID_RECEIVER));
+            assertEquals(VALID_RECEIVER, order.getRecieverPerson());
+        }
+
+        @Test
+        @DisplayName("setrecieverperson rechaza null y vacio")
+        void setReceiverPersonInvalid() {
+            assertEquals(-1, order.setRecieverPerson(null));
+            assertEquals(-1, order.setRecieverPerson("  "));
+        }
+
+        @Test
+        @DisplayName("setphonecontacts acepta null como valido")
+        void setPhoneContactsNull() {
+            assertEquals(0, order.setPhoneContacts(null));
+            assertTrue(order.getPhoneContacts().isEmpty());
+        }
+
+        @Test
+        @DisplayName("setphonecontacts acepta varios telefonos separados por coma")
+        void setPhoneContactsCommaSeparated() {
+            assertEquals(0, order.setPhoneContacts("600123456, 600654321"));
+            assertEquals(2, order.getPhoneContacts().size());
+        }
+
+        @Test
+        @DisplayName("setphonecontacts recorta espacios en cada telefono")
+        void setPhoneContactsWithSpaces() {
+            assertEquals(0, order.setPhoneContacts(" 600123456 , 600654321 "));
+            assertTrue(order.getPhoneContacts().contains("600123456"));
+            assertTrue(order.getPhoneContacts().contains("600654321"));
+        }
+
+        @Test
         @DisplayName("setpaymentdate cambia el status a CONFIRMED")
         void paymentConfirms() {
-            order.setPaymentDate(VALID_PAYMENT);
+            assertEquals(0, order.setPaymentDate(VALID_PAYMENT));
             assertEquals("CONFIRMED", order.getStatus());
+        }
+
+        @Test
+        @DisplayName("setpaymentdate invalid formato devuelve -1")
+        void paymentDateInvalid() {
+            assertEquals(-1, order.setPaymentDate("bad-date"));
+            assertEquals("CREATED", order.getStatus());
         }
 
         @Test
@@ -88,6 +131,12 @@ class OrderTest {
             order.setPaymentDate(VALID_PAYMENT);
             order.setDeliveryDate("03/01/2024-10:00:00");
             assertEquals("DELIVERED", order.getStatus());
+        }
+
+        @Test
+        @DisplayName("setdeliverydate invalid formato devuelve -1")
+        void deliveryDateInvalid() {
+            assertEquals(-1, order.setDeliveryDate("bad-date"));
         }
     }
 
@@ -112,6 +161,12 @@ class OrderTest {
         void setDimensionsZero() {
             assertEquals(-1, order.setDimensions("0,0,0,0"));
         }
+
+        @Test
+        @DisplayName("setdimensions rechaza valores negativos")
+        void setDimensionsNegative() {
+            assertEquals(-1, order.setDimensions("-1,20.0,15.0,5.0"));
+        }
     }
 
     @Nested
@@ -135,6 +190,19 @@ class OrderTest {
         @DisplayName("rechaza formato incorrecto (partes != 4)")
         void rejectsWrongFormat() {
             assertEquals(-1, order.setShopCartDetails("B001,10.0,0.0"));
+        }
+
+        @Test
+        @DisplayName("acepta shopcart con punto y coma final")
+        void addDetailsWithTrailingSemicolon() {
+            assertEquals(0, order.setShopCartDetails("B001,10.0,1.0,1;"));
+            assertEquals(1, order.getShopCartList().size());
+        }
+
+        @Test
+        @DisplayName("rechaza shopcart con precio no numerico")
+        void rejectsBadPrice() {
+            assertEquals(-1, order.setShopCartDetails("B001,not-a-price,0.0,1"));
         }
     }
 }
