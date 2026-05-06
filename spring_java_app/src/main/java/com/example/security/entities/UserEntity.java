@@ -10,6 +10,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @Column(unique = true)
@@ -29,9 +30,9 @@ public class UserEntity {
     private boolean credentialNoExpired;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles", 
-               joinColumns = @JoinColumn(name = "user_id"), 
-               inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "user_roles",
+               joinColumns = @JoinColumn(name = "user_id", nullable = false),
+               inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false))
     private Set<RoleEntity> roles = new HashSet<>();
 
     public Long getId() {

@@ -31,22 +31,18 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("\n=========================================");
-        System.out.println("INICIALIZANDO DATOS DE SEGURIDAD JWT");
-        System.out.println("=========================================");
+        System.out.println("\n=== INICIALIZANDO DATOS ===");
         
         try {
-            // PASO 1: Crear PERMISOS
-            System.out.println("\n>>> PASO 1/4: Creando permisos...");
+            // paso 1: crear permisos
             PermissionEntity createPermission = createPermissionIfNotExists("CREATE");
             PermissionEntity readPermission = createPermissionIfNotExists("READ");
             PermissionEntity updatePermission = createPermissionIfNotExists("UPDATE");
             PermissionEntity deletePermission = createPermissionIfNotExists("DELETE");
             
-            System.out.println("✓ Permisos creados: CREATE, READ, UPDATE, DELETE");
+            System.out.println("Permisos creados: CREATE, READ, UPDATE, DELETE");
 
-            // PASO 2: Crear ROLES con sus permisos
-            System.out.println("\n>>> PASO 2/4: Creando roles...");
+            // paso 2: crear roles
             RoleEntity roleAdmin = createRoleWithPermissions(RoleEnum.ADMIN, 
                                     Set.of(createPermission, readPermission, updatePermission, deletePermission));
 
@@ -56,10 +52,9 @@ public class DataInitializer implements CommandLineRunner {
             RoleEntity roleManager = createRoleWithPermissions(RoleEnum.MANAGER, 
                                     Set.of(createPermission, readPermission, updatePermission));
             
-            System.out.println("✓ Roles creados: ADMIN, USER, MANAGER");
+            System.out.println("Roles creados: ADMIN, USER, MANAGER");
 
-            // PASO 3: Crear USUARIOS
-            System.out.println("\n>>> PASO 3/4: Creando usuarios...");
+            // paso 3: crear usuarios
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             
             createUserIfNotExists("admin", encoder.encode("1234"), roleAdmin);
@@ -67,26 +62,21 @@ public class DataInitializer implements CommandLineRunner {
             createUserIfNotExists("user1", encoder.encode("1234"), roleUser);
             createUserIfNotExists("user2", encoder.encode("1234"), roleUser);
             
-            System.out.println("✓ Usuarios creados: admin, manager, user1, user2");
+            System.out.println("Usuarios creados: admin, manager, user1, user2");
             
-            // PASO 4: Verificación
-            System.out.println("\n>>> PASO 4/4: Verificando datos...");
+            // verificacion
             verifyData();
             
-            // VERIFICACIÓN FINAL
-            System.out.println("\n=========================================");
-            System.out.println("✅ DATOS CARGADOS EXITOSAMENTE!");
-            System.out.println("=========================================");
-            System.out.println("Usuarios disponibles para login:");
-            System.out.println("  👤 admin   / 1234 (ADMIN)");
-            System.out.println("  👤 manager / 1234 (MANAGER)");
-            System.out.println("  👤 user1   / 1234 (USER)");
-            System.out.println("  👤 user2   / 1234 (USER)");
-            System.out.println("=========================================\n");
+            System.out.println("\n=== DATOS CARGADOS ===");
+            System.out.println("Usuarios disponibles:");
+            System.out.println("  admin   / 1234 (ADMIN)");
+            System.out.println("  manager / 1234 (MANAGER)");
+            System.out.println("  user1   / 1234 (USER)");
+            System.out.println("  user2   / 1234 (USER)");
+            System.out.println("======================\n");
             
         } catch (Exception e) {
-            System.err.println("\n❌ ERROR al cargar datos de seguridad:");
-            System.err.println(e.getMessage());
+            System.err.println("Error al cargar datos: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -106,16 +96,13 @@ public class DataInitializer implements CommandLineRunner {
         
         if (existingRoleOpt.isPresent()) {
             RoleEntity existingRole = existingRoleOpt.get();
-            // Verificar si tiene todos los permisos necesarios
             if (existingRole.getPermissionList().containsAll(permissions)) {
                 return existingRole;
             }
-            // Si no tiene todos los permisos, actualizarlos
             existingRole.setPermissionList(new HashSet<>(permissions));
             return roleRepository.save(existingRole);
         }
         
-        // Crear nuevo rol
         RoleEntity role = new RoleEntity(roleEnum, new HashSet<>(permissions));
         return roleRepository.save(role);
     }
@@ -135,14 +122,6 @@ public class DataInitializer implements CommandLineRunner {
         long roleCount = roleRepository.count();
         long userCount = userRepository.count();
         
-        System.out.println("  - Permisos: " + permCount + "/4");
-        System.out.println("  - Roles: " + roleCount + "/3");
-        System.out.println("  - Usuarios: " + userCount + "/4");
-        
-        if (permCount != 4 || roleCount != 3 || userCount != 4) {
-            System.err.println("⚠️  ADVERTENCIA: Algunos datos pueden estar incompletos!");
-        } else {
-            System.out.println("✓ Todos los datos verificados correctamente");
-        }
+        System.out.println("Verificacion: Permisos=" + permCount + ", Roles=" + roleCount + ", Usuarios=" + userCount);
     }
 }

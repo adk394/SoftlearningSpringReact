@@ -11,12 +11,11 @@ import jakarta.persistence.Table;
 @Table(name = "books")
 public class BookDTO {
 
-    // ID del libro
+    // id del libro
     @Id
     @Column(name = "ident")
     private int id;
 
-    // Datos básicos del libro
     @Column(name = "title")
     private String title;
 
@@ -35,7 +34,6 @@ public class BookDTO {
     @Column(name = "publisher")
     private String publisher;
 
-    // ===== Datos físicos =====
     @Column(name = "weight")
     private double weight;
 
@@ -48,11 +46,10 @@ public class BookDTO {
     @Column(name = "depth")
     private double depth;
 
-    // constructor vacio (requerido por JPA)
+    // constructor vacio (requerido por jpa)
     public BookDTO() {
     }
 
-    // constructor 
     public BookDTO(String title, int id, double price, String author, String isbn,
                    String releaseDate, String publisher,
                    double weight, double height, double width, double depth) {
@@ -69,8 +66,6 @@ public class BookDTO {
         this.width = width;
         this.depth = depth;
     }
-
-    // ===== GETTERS Y SETTERS =====
 
     public int getId() {
         return id;

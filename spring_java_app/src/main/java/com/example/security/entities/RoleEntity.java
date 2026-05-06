@@ -11,6 +11,7 @@ public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
     @Column(name = "role_name")
@@ -18,9 +19,9 @@ public class RoleEntity {
     private RoleEnum roleEnum;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "role_permissions", 
-               joinColumns = @JoinColumn(name = "role_id"), 
-               inverseJoinColumns = @JoinColumn(name = "permission_id"))
+    @JoinTable(name = "role_permissions",
+               joinColumns = @JoinColumn(name = "role_id", nullable = false),
+               inverseJoinColumns = @JoinColumn(name = "permission_id", nullable = false))
     private Set<PermissionEntity> permissionList = new HashSet<>();
 
     public Long getId() {

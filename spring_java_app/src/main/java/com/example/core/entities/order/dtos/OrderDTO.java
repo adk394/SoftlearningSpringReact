@@ -10,16 +10,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
-@XmlRootElement(name = "order")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Entity
 @Table(name = "orders")
 public class OrderDTO {
@@ -60,8 +54,7 @@ public class OrderDTO {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
-    // necesario para serializar en xml (sin serializar los detalles en xml no se puede serializar el pedido tampoco)
-    @XmlElement(name = "shopCart")
+    // necesario para serializar en xml
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "shopCart")
     private List<OrderDetailDTO> shopCart = new ArrayList<>();

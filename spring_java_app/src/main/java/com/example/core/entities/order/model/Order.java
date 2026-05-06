@@ -24,7 +24,6 @@ public class Order extends Operation {
     protected Order() {
     }
 
-    // constructor factory simple
     public static Order getInstance(int orderID, int clientID, String startDate, String description) throws BuildException, GeneralDateTimeException {
         Order o = new Order();
         String message = "";
@@ -48,7 +47,6 @@ public class Order extends Operation {
         return o;
     }
 
-    // constructor factory completo
     public static Order getInstance(int orderID, int clientID, String startDate, String description, 
                                      String address, String name, String phone, String paymentDate, 
                                      String deliveryDate, String packageInfo, String shopCartDetails) throws BuildException, GeneralDateTimeException {
@@ -90,7 +88,6 @@ public class Order extends Operation {
         return o;
     }
 
-    // setters que devuelven 0 si ok, -1 si falla (estilo Person)
     public int setRecieverAddress(String recieverAddress) {
         if (recieverAddress == null || recieverAddress.trim().isEmpty()) {
             return -1;
@@ -109,7 +106,6 @@ public class Order extends Operation {
 
     public int setPhoneContacts(String phones) {
         if (phones == null || phones.trim().isEmpty()) {
-            // si no hay telefons, se considera correcto!!!
             return 0;
         }
         try {
@@ -200,7 +196,6 @@ public class Order extends Operation {
         }
     }
 
-    // getters basicos
     public int getOrderID() {
         return orderID;
     }

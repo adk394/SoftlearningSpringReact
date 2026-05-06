@@ -4,7 +4,6 @@ import com.example.security.dtos.JwtResponse;
 import com.example.security.dtos.LoginRequest;
 import com.example.security.dtos.MessageResponse;
 import com.example.security.dtos.RegisterRequest;
-import com.example.security.entities.PermissionEntity;
 import com.example.security.entities.RoleEntity;
 import com.example.security.entities.UserEntity;
 import com.example.security.jwt.JwtUtils;
@@ -47,8 +46,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        
-        // Autenticar al usuario
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -56,19 +53,15 @@ public class AuthController {
                 )
         );
 
-        // Establecer el contexto de seguridad
         SecurityContextHolder.getContext().setAuthentication(authentication);
         
-        // Generar el token JWT
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtUtils.generateToken(userDetails);
 
-        // Obtener los roles del usuario
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        // Buscar el ID del usuario
         UserEntity user = userRepository.findUserEntityByUsername(userDetails.getUsername()).orElse(null);
 
         return ResponseEntity.ok(new JwtResponse(
@@ -81,14 +74,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        
-        // Verificar si el usuario ya existe
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity.badRequest()
                     .body(new MessageResponse("Error: El usuario ya existe!"));
         }
 
-        // Crear el nuevo usuario
         UserEntity user = new UserEntity();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(encoder.encode(registerRequest.getPassword()));
@@ -97,12 +87,10 @@ public class AuthController {
         user.setAccountNoLocked(true);
         user.setCredentialNoExpired(true);
 
-        // Asignar roles
         Set<String> strRoles = registerRequest.getRoles();
         Set<RoleEntity> roles = new HashSet<>();
 
         if (strRoles == null || strRoles.isEmpty()) {
-            // Por defecto asignar rol USER
             RoleEntity userRole = roleRepository.findByRoleEnum(RoleEnum.USER)
                     .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
             roles.add(userRole);

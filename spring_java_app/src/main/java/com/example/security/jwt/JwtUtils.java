@@ -24,10 +24,9 @@ public class JwtUtils {
     @Value("${jwt.time.expiration}")
     private String timeExpiration;
 
-    // Generar token de acceso
+    // generar token de acceso
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Agregar roles y permisos al token
         claims.put("authorities", userDetails.getAuthorities());
         
         return Jwts.builder()
@@ -39,40 +38,34 @@ public class JwtUtils {
                 .compact();
     }
 
-    // Obtener firma del token
     private SecretKey getSignatureKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Validar token de acceso
+    // validar token de acceso
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // Validar si el token está expirado
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // Obtener el username del token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Obtener fecha de expiración del token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Obtener un solo claim
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // Obtener todos los claims del token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSignatureKey())

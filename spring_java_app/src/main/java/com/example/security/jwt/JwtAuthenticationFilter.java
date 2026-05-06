@@ -30,27 +30,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
-        // 1. Obtener el token del request
         final String token = getTokenFromRequest(request);
 
-        // 2. Si no hay token, continuar con el siguiente filtro
         if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 3. Extraer el username del token
         final String username = jwtUtils.extractUsername(token);
 
-        // 4. Si hay usuario y no está autenticado en el contexto de seguridad
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // 5. Cargar el usuario
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // 6. Validar el token
             if (jwtUtils.isTokenValid(token, userDetails)) {
-                // 7. Crear el objeto de autenticación
                 UsernamePasswordAuthenticationToken authenticationToken = 
                     new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -58,19 +51,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities()
                     );
                 
-                // 8. Agregar detalles de la request
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // 9. Establecer la autenticación en el contexto de seguridad
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
 
-        // 10. Continuar con el filtro
         filterChain.doFilter(request, response);
     }
 
-    // Obtener el token del header Authorization
     private String getTokenFromRequest(HttpServletRequest request) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         

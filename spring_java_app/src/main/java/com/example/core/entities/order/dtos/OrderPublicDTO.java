@@ -2,12 +2,6 @@ package com.example.core.entities.order.dtos;
 
 import java.util.List;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "order")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class OrderPublicDTO {
 
     private int orderID;

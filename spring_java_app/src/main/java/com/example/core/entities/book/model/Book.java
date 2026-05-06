@@ -8,24 +8,22 @@ import com.example.core.entities.shared.validations.Check;
 import com.example.shared.exceptions.BuildException;
 
 /**
- * clase book
  * libro como producto almacenable y comercializable
  */
 public class Book extends Product implements Storable, Marketable {
 
-    // atributos del libro
+    // atributos
     protected String isbn, title, author, editorial;
     protected int yearPublished;
 
-    // datos fisicos (peso y dimensiones)
+    // datos fisicos
     protected PhysicalData physicalData;
 
-    // constructor vacio
     public Book() {
     }
 
     /**
-     * crear instancia y validar datos
+     * crear instancia
      */
     public static Book getInstance(String idProduct, String name, String description, double price, int stock,
             boolean isAvailable, String isbn, String title, String author, String editorial,
@@ -33,31 +31,21 @@ public class Book extends Product implements Storable, Marketable {
 
         Book book = new Book();
 
-        // validar datos del producto y del libro
+        // validar datos
         String error = book.validateBookData(idProduct, name, description, price, stock,
                 isbn, title, author, editorial, yearPublished, weight, height, width, depth);
 
-        // si hay errores se lanza exception
         if (!error.isEmpty()) {
             throw new BuildException(error);
         }
 
-        // asignar disponibilidad recibida
         book.setAvailable(isAvailable);
 
         return book;
     }
 
-
-
-
-
-
-
-
-    
     /**
-     * valida datos y devuelve mensaje de error
+     * valida datos
      */
     private String validateBookData(String idProduct, String name, String description, double price, int stock,
             String isbn, String title, String author, String editorial, int yearPublished,
@@ -65,20 +53,18 @@ public class Book extends Product implements Storable, Marketable {
 
         String errorMessage = "";
 
-        // validar campos heredados de product
         errorMessage += productDataValidation(idProduct, name, description, price, stock);
 
-        // validar campos propios del libro
+        // validar campos propios
         if (setIsbn(isbn) != 0) errorMessage += "ISBN incorrecto. ";
         if (setTitle(title) != 0) errorMessage += "Titulo incorrecto. ";
         if (setAuthor(author) != 0) errorMessage += "Autor incorrecto. ";
         if (setEditorial(editorial) != 0) errorMessage += "Editorial incorrecta. ";
         if (setYearPublished(yearPublished) != 0) errorMessage += "Año de publicacion incorrecto. ";
 
-        // crear y validar datos fisicos
         PhysicalData data = PhysicalData.getInstance(weight, height, width, depth);
         if (data == null) {
-            errorMessage += "Datos físicos incorrectos. ";
+            errorMessage += "Datos fisicos incorrectos. ";
         } else {
             this.physicalData = data;
         }
@@ -86,13 +72,10 @@ public class Book extends Product implements Storable, Marketable {
         return errorMessage;
     }
 
-    // getters y setters
-
     public String getIsbn() {
         return isbn;
     }
 
-    // valida isbn antes de asignar
     public int setIsbn(String isbn) {
         if (Check.ISBN(isbn)) {
             this.isbn = isbn;
@@ -105,7 +88,6 @@ public class Book extends Product implements Storable, Marketable {
         return title;
     }
 
-    // valida que el titulo tenga al menos 1 caracter
     public int setTitle(String title) {
         if (Check.minStringChars(title, 1)) {
             this.title = title;
@@ -118,7 +100,6 @@ public class Book extends Product implements Storable, Marketable {
         return author;
     }
 
-    // valida que el autor tenga al menos 1 caracter
     public int setAuthor(String author) {
         if (Check.minStringChars(author, 1)) {
             this.author = author;
@@ -131,7 +112,6 @@ public class Book extends Product implements Storable, Marketable {
         return editorial;
     }
 
-    // valida que la editorial tenga al menos 2 caracteres
     public int setEditorial(String editorial) {
         if (Check.minStringChars(editorial, 2)) {
             this.editorial = editorial;
@@ -144,7 +124,6 @@ public class Book extends Product implements Storable, Marketable {
         return yearPublished;
     }
 
-    // valida que el ano sea un numero valido
     public int setYearPublished(int yearPublished) {
         if (Check.isValidNumber(yearPublished, 0)) {
             this.yearPublished = yearPublished;
@@ -154,8 +133,7 @@ public class Book extends Product implements Storable, Marketable {
     }
 
     /**
-     * indica si esta disponible
-     * implementacion de marketable
+     * disponibilidad
      */
     @Override
     public boolean isAvailable() {
@@ -163,8 +141,7 @@ public class Book extends Product implements Storable, Marketable {
     }
 
     /**
-     * devuelve volumen
-     * implementacion de storable
+     * volumen
      */
     @Override
     public double getVolume() {
@@ -172,7 +149,7 @@ public class Book extends Product implements Storable, Marketable {
     }
 
     /**
-     * devuelve area
+     * area
      */
     @Override
     public double getArea() {

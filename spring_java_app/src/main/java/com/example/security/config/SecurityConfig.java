@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true) // activa @PreAuthorize, @PostAuthorize, etc.
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -33,42 +33,37 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                // Deshabilitar CSRF (no es necesario con JWT)
                 .csrf(csrf -> csrf.disable())
-                // Sin sesiones (stateless)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Configurar rutas
                 .authorizeHttpRequests(http -> {
-                    // Endpoints públicos (autenticación)
+                    // endpoints publicos (login y registro)
                     http.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
                     
-                    // Endpoints GET - Accesible por USER, MANAGER, ADMIN
+                    // get - todos los roles
                     http.requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.GET, "/api/clients/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     
-                    // Endpoints POST - Solo MANAGER y ADMIN
+                    // post - manager y admin
                     http.requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.POST, "/api/clients/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("MANAGER", "ADMIN");
                     
-                    // Endpoints PUT - Solo MANAGER y ADMIN
+                    // put - manager y admin
                     http.requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.PUT, "/api/clients/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("MANAGER", "ADMIN");
                     
-                    // Endpoints DELETE - Solo ADMIN
+                    // delete - solo admin
                     http.requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/clients/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN");
 
-                    // Cualquier otra solicitud requiere autenticación
+                    // cualquier otra peticion requiere autenticacion
                     http.anyRequest().authenticated();
                 })
-                // Agregar el filtro JWT antes del filtro de autenticación de username/password
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                // Configurar proveedor de autenticación
                 .authenticationProvider(authenticationProvider())
                 .build();
     }
@@ -80,7 +75,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
