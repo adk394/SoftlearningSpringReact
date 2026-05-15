@@ -2,7 +2,7 @@ package com.example.security.config;
 
 import com.example.security.jwt.JwtAuthenticationFilter;
 import com.example.security.auth.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,13 +22,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -36,29 +34,34 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(http -> {
-                    // endpoints publicos (login y registro)
+                    // endpoints publicos (login, registro y refresh-token)
                     http.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
+                    http.requestMatchers(HttpMethod.POST, "/api/auth/refresh-token").permitAll();
                     
                     // get - todos los roles
                     http.requestMatchers(HttpMethod.GET, "/api/books/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.GET, "/api/clients/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("USER", "MANAGER", "ADMIN");
+                    http.requestMatchers(HttpMethod.GET, "/api/rest/orders/**").hasAnyRole("USER", "MANAGER", "ADMIN");
                     
                     // post - manager y admin
                     http.requestMatchers(HttpMethod.POST, "/api/books/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.POST, "/api/clients/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.POST, "/api/orders/**").hasAnyRole("MANAGER", "ADMIN");
+                    http.requestMatchers(HttpMethod.POST, "/api/rest/orders/**").hasAnyRole("MANAGER", "ADMIN");
                     
                     // put - manager y admin
                     http.requestMatchers(HttpMethod.PUT, "/api/books/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.PUT, "/api/clients/**").hasAnyRole("MANAGER", "ADMIN");
                     http.requestMatchers(HttpMethod.PUT, "/api/orders/**").hasAnyRole("MANAGER", "ADMIN");
+                    http.requestMatchers(HttpMethod.PUT, "/api/rest/orders/**").hasAnyRole("MANAGER", "ADMIN");
                     
                     // delete - solo admin
                     http.requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/clients/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN");
+                    http.requestMatchers(HttpMethod.DELETE, "/api/rest/orders/**").hasRole("ADMIN");
 
                     // cualquier otra peticion requiere autenticacion
                     http.anyRequest().authenticated();

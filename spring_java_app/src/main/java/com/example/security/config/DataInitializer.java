@@ -1,9 +1,7 @@
 package com.example.security.config;
 
-import com.example.security.entities.PermissionEntity;
 import com.example.security.entities.RoleEntity;
 import com.example.security.entities.UserEntity;
-import com.example.security.repositories.PermissionRepository;
 import com.example.security.repositories.RoleRepository;
 import com.example.security.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -25,36 +21,20 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private PermissionRepository permissionRepository;
-
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         System.out.println("\n=== INICIALIZANDO DATOS ===");
         
         try {
-            // paso 1: crear permisos
-            PermissionEntity createPermission = createPermissionIfNotExists("CREATE");
-            PermissionEntity readPermission = createPermissionIfNotExists("READ");
-            PermissionEntity updatePermission = createPermissionIfNotExists("UPDATE");
-            PermissionEntity deletePermission = createPermissionIfNotExists("DELETE");
-            
-            System.out.println("Permisos creados: CREATE, READ, UPDATE, DELETE");
-
-            // paso 2: crear roles
-            RoleEntity roleAdmin = createRoleWithPermissions(RoleEnum.ADMIN, 
-                                    Set.of(createPermission, readPermission, updatePermission, deletePermission));
-
-            RoleEntity roleUser = createRoleWithPermissions(RoleEnum.USER, 
-                                    Set.of(readPermission));
-
-            RoleEntity roleManager = createRoleWithPermissions(RoleEnum.MANAGER, 
-                                    Set.of(createPermission, readPermission, updatePermission));
+            // paso 1: crear roles
+            RoleEntity roleAdmin = createRoleIfNotExists(RoleEnum.ADMIN);
+            RoleEntity roleUser = createRoleIfNotExists(RoleEnum.USER);
+            RoleEntity roleManager = createRoleIfNotExists(RoleEnum.MANAGER);
             
             System.out.println("Roles creados: ADMIN, USER, MANAGER");
 
-            // paso 3: crear usuarios
+            // paso 2: crear usuarios
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             
             createUserIfNotExists("admin", encoder.encode("1234"), roleAdmin);
@@ -82,28 +62,12 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
     
-    private PermissionEntity createPermissionIfNotExists(String name) {
-        Optional<PermissionEntity> existing = permissionRepository.findByName(name);
+    private RoleEntity createRoleIfNotExists(RoleEnum roleEnum) {
+        Optional<RoleEntity> existing = roleRepository.findByRoleEnum(roleEnum);
         if (existing.isPresent()) {
             return existing.get();
         }
-        PermissionEntity permission = new PermissionEntity(name);
-        return permissionRepository.save(permission);
-    }
-    
-    private RoleEntity createRoleWithPermissions(RoleEnum roleEnum, Set<PermissionEntity> permissions) {
-        Optional<RoleEntity> existingRoleOpt = roleRepository.findByRoleEnum(roleEnum);
-        
-        if (existingRoleOpt.isPresent()) {
-            RoleEntity existingRole = existingRoleOpt.get();
-            if (existingRole.getPermissionList().containsAll(permissions)) {
-                return existingRole;
-            }
-            existingRole.setPermissionList(new HashSet<>(permissions));
-            return roleRepository.save(existingRole);
-        }
-        
-        RoleEntity role = new RoleEntity(roleEnum, new HashSet<>(permissions));
+        RoleEntity role = new RoleEntity(roleEnum);
         return roleRepository.save(role);
     }
     
@@ -112,16 +76,22 @@ public class DataInitializer implements CommandLineRunner {
         if (existing.isPresent()) {
             return existing.get();
         }
-        UserEntity user = new UserEntity(username, password, true, true, true, true, 
-                                         new HashSet<>(Set.of(role)));
+        UserEntity user = UserEntity.builder()
+                .username(username)
+                .password(password)
+                .isEnabled(true)
+                .accountNoExpired(true)
+                .accountNoLocked(true)
+                .credentialNoExpired(true)
+                .build();
+        user.getRoles().add(role);
         return userRepository.save(user);
     }
     
     private void verifyData() {
-        long permCount = permissionRepository.count();
         long roleCount = roleRepository.count();
         long userCount = userRepository.count();
         
-        System.out.println("Verificacion: Permisos=" + permCount + ", Roles=" + roleCount + ", Usuarios=" + userCount);
+        System.out.println("Verificacion: Roles=" + roleCount + ", Usuarios=" + userCount);
     }
 }

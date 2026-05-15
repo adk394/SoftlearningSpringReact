@@ -1,123 +1,56 @@
 package com.example.presentation.api.rest.auth;
 
-import com.example.security.dtos.JwtResponse;
 import com.example.security.dtos.LoginRequest;
 import com.example.security.dtos.MessageResponse;
 import com.example.security.dtos.RegisterRequest;
-import com.example.security.entities.RoleEntity;
-import com.example.security.entities.UserEntity;
-import com.example.security.jwt.JwtUtils;
-import com.example.security.config.RoleEnum;
-import com.example.security.repositories.RoleRepository;
-import com.example.security.repositories.UserRepository;
+import com.example.security.dtos.TokenResponse;
+import com.example.security.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder encoder;
-
-    @Autowired
-    private JwtUtils jwtUtils;
+    private AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String jwt = jwtUtils.generateToken(userDetails);
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        UserEntity user = userRepository.findUserEntityByUsername(userDetails.getUsername()).orElse(null);
-
-        return ResponseEntity.ok(new JwtResponse(
-                jwt,
-                user != null ? user.getId() : null,
-                userDetails.getUsername(),
-                roles
-        ));
+        try {
+            TokenResponse response = authService.authenticate(loginRequest);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse(e.getMessage()));
+        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
-        if (userRepository.existsByUsername(registerRequest.getUsername())) {
+        try {
+            TokenResponse response = authService.register(registerRequest);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error: El usuario ya existe!"));
+                    .body(new MessageResponse(e.getMessage()));
         }
+    }
 
-        UserEntity user = new UserEntity();
-        user.setUsername(registerRequest.getUsername());
-        user.setPassword(encoder.encode(registerRequest.getPassword()));
-        user.setEnabled(true);
-        user.setAccountNoExpired(true);
-        user.setAccountNoLocked(true);
-        user.setCredentialNoExpired(true);
-
-        Set<String> strRoles = registerRequest.getRoles();
-        Set<RoleEntity> roles = new HashSet<>();
-
-        if (strRoles == null || strRoles.isEmpty()) {
-            RoleEntity userRole = roleRepository.findByRoleEnum(RoleEnum.USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Rol no encontrado."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role.toUpperCase()) {
-                    case "ADMIN":
-                        RoleEntity adminRole = roleRepository.findByRoleEnum(RoleEnum.ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Rol ADMIN no encontrado."));
-                        roles.add(adminRole);
-                        break;
-                    case "MANAGER":
-                        RoleEntity managerRole = roleRepository.findByRoleEnum(RoleEnum.MANAGER)
-                                .orElseThrow(() -> new RuntimeException("Error: Rol MANAGER no encontrado."));
-                        roles.add(managerRole);
-                        break;
-                    default:
-                        RoleEntity userRole = roleRepository.findByRoleEnum(RoleEnum.USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Rol USER no encontrado."));
-                        roles.add(userRole);
-                }
-            });
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authentication) {
+        try {
+            TokenResponse response = authService.refreshToken(authentication);
+            if (response == null) {
+                return ResponseEntity.badRequest()
+                        .body(new MessageResponse("Error: Invalid refresh token"));
+            }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse(e.getMessage()));
         }
-
-        user.setRoles(roles);
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("Usuario registrado exitosamente!"));
     }
 }
