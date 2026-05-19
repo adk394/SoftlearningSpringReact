@@ -62,6 +62,24 @@ public class SecurityConfig {
                     http.requestMatchers(HttpMethod.DELETE, "/api/clients/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/orders/**").hasRole("ADMIN");
                     http.requestMatchers(HttpMethod.DELETE, "/api/rest/orders/**").hasRole("ADMIN");
+                    
+                    // ============================================
+                    // CONFIGURACIÓN JWT SIN VALIDACIÓN DE ROLES - ELECTRONICS
+                    // ============================================
+                    // Para los endpoints de /api/electronics/**, solo requerimos que el usuario
+                    // esté autenticado (tenga un token JWT válido).
+                    // NO verificamos roles específicos, por lo que cualquier usuario
+                    // (USER, MANAGER o ADMIN) puede acceder a todos los métodos.
+                    //
+                    // .authenticated() = requiere token JWT válido, sin importar el rol
+                    // Esto es diferente de hasAnyRole() o hasRole() que validan permisos específicos
+                    //
+                    // Endpoints protegidos:
+                    // - GET    /api/electronics/**      -> Cualquier usuario autenticado
+                    // - POST   /api/electronics/**      -> Cualquier usuario autenticado
+                    // - PUT    /api/electronics/**      -> Cualquier usuario autenticado
+                    // - DELETE /api/electronics/**      -> Cualquier usuario autenticado
+                    http.requestMatchers("/api/electronics/**").authenticated();
 
                     // cualquier otra peticion requiere autenticacion
                     http.anyRequest().authenticated();
